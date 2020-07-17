@@ -3,13 +3,63 @@ import {
   hashSync,
   compareSync,
   genSaltSync,
+  Payload,
+  setExpiration,
+  Jose,
+  makeJwt
 } from "../dependencies.ts";
 
 import User from "../models/User.ts";
 
+const key = Deno.env.get('JWT_SECRET_KEY')!
+const header: Jose = {
+  alg: "HS256",
+  typ: "JWT",
+};
+
 class AuthController {
-  login() {
-    //
+  async login(ctx: RouterContext) {
+    const { value: { email, password } } = await ctx.request.body();
+
+    if (!email || !password) {
+      ctx.response.status = 422;
+      ctx.response.body = {
+        message: 'Please provide email and password'
+      }
+      return;
+    }
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      ctx.response.status = 422;
+      ctx.response.body = {
+        message: 'Email does not exists!'
+      }
+      return;
+    }
+
+    if (!compareSync(password, user.password)) {
+      ctx.response.status = 422;
+      ctx.response.body = {
+        message: 'Incorrect password!'
+      }
+      return;
+    }
+
+    const payload: Payload = {
+      iss: "joe",
+      exp: setExpiration(new Date().getTime() + 60 * 60 * 1000),
+    };
+
+    const jwt = await makeJwt({ header, payload, key })
+
+    ctx.response.body = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      jwt,
+    }
   }
 
   async register(ctx: RouterContext) {

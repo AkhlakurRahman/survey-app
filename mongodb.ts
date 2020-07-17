@@ -2,7 +2,7 @@ import { MongoClient } from "./dependencies.ts";
 
 const client = new MongoClient();
 client.connectWithUri(
-  "mongodb+srv://akrahman:akrahman@cluster0-zbbqc.mongodb.net/survey?retryWrites=true&w=majority",
+  Deno.env.get('MONGODB_URI')!,
 );
 
 // Defining schema interface

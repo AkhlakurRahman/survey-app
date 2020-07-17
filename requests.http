@@ -1,3 +1,4 @@
+### Register Post Request
 POST http://localhost:8000/api/register
 Content-Type: application/json
 
@@ -6,3 +7,19 @@ Content-Type: application/json
     "email": "yours@example.com",
     "password": "12345"
 }
+
+### Login Post Request
+POST http://localhost:8000/api/login
+Content-Type: application/json
+
+{
+    "email": "yours@example.com",
+    "password": "12345"
+}
+
+################################################################
+######## Survey
+################################################################
+
+### Get All Survey
+GET http://localhost:8000/api/Survey
